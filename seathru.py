@@ -313,8 +313,10 @@ def refine_neighborhood_map(nmap, min_size = 10, radius = 3):
 def load_image_and_depth_map(img_fname, depths_fname, size_limit = 1024):
     depths = Image.open(depths_fname)
     img = Image.fromarray(rawpy.imread(img_fname).postprocess())
-    img.thumbnail((size_limit, size_limit), Image.ANTIALIAS)
-    depths = depths.resize(img.size, Image.ANTIALIAS)
+    # img.thumbnail((size_limit, size_limit), Image.ANTIALIAS)
+    img.thumbnail((size_limit, size_limit), Image.LANCZOS)
+    # depths = depths.resize(img.size, Image.ANTIALIAS)
+    depths = depths.resize(img.size, Image.LANCZOS)
     return np.float32(img) / 255.0, np.array(depths)
 
 '''
