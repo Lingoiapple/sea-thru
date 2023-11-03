@@ -263,7 +263,9 @@ def construct_neighborhood_map(depths, epsilon=0.05):
 Finds the closest nonzero label to a location
 '''
 def find_closest_label(nmap, start_x, start_y):
-    mask = np.zeros_like(nmap).astype(np.bool)
+    # mask = np.zeros_like(nmap).astype(np.bool)
+    mask = np.zeros_like(nmap).astype(bool)
+
     q = collections.deque()
     q.append((start_x, start_y))
     while not len(q) == 0:
