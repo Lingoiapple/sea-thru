@@ -14,6 +14,8 @@ from matplotlib import pyplot as plt
 from skimage import exposure
 from skimage.restoration import denoise_bilateral, denoise_tv_chambolle, estimate_sigma
 from skimage.morphology import closing, opening, erosion, dilation, disk, diamond, square
+from tifffile import imread #open tif file
+
 
 matplotlib.use('TkAgg')
 
@@ -313,10 +315,11 @@ def refine_neighborhood_map(nmap, min_size = 10, radius = 3):
 
 
 def load_image_and_depth_map(img_fname, depths_fname, size_limit = 1024):
-    depths = Image.open(depths_fname)
+    # depths = Image.open(depths_fname)
+    depths = Image.fromarray(imread(depths_fname))
     img = Image.fromarray(rawpy.imread(img_fname).postprocess())
     # img.thumbnail((size_limit, size_limit), Image.ANTIALIAS)
-    img.thumbnail((size_limit, size_limit), Image.LANCZOS)
+    img.thumbnail((size_limit, size_limit), Image.LANCZOS) 
     # depths = depths.resize(img.size, Image.ANTIALIAS)
     depths = depths.resize(img.size, Image.LANCZOS)
     return np.float32(img) / 255.0, np.array(depths)
@@ -541,6 +544,9 @@ def preprocess_for_monodepth(img_fname, output_fname, size_limit=1024):
     Image.fromarray((np.round(img_adapteq * 255.0)).astype(np.uint8)).save(output_fname)
 
 def preprocess_sfm_depth_map(depths, min_depth, max_depth):
+    # turn NaN values into zero
+    depths[np.isnan(depths)] = 0
+
     z_min = np.min(depths) + (min_depth * (np.max(depths) - np.min(depths)))
     z_max = np.min(depths) + (max_depth * (np.max(depths) - np.min(depths)))
     if max_depth != 0:
